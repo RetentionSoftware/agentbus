@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.14"
+      - run: uv sync --locked
+      - run: uv run ruff check
+      - run: uv run ruff format --check
+      - run: uv run mypy
+
+  test:
+    name: test (${{ matrix.os }}, Python ${{ matrix.python }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, python: "3.11" }
+          - { os: ubuntu-latest, python: "3.14" }
+          - { os: windows-latest, python: "3.14" }
+          - { os: macos-latest, python: "3.14" }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - run: uv sync --locked
+      - run: uv run pytest
+
+      - name: start.sh / stop.sh
+        if: runner.os != 'Windows'
+        env:
+          AGENTBUS_PORT: "8799"
+        run: |
+          project="$RUNNER_TEMP/demo project"
+          mkdir -p "$project"
+          scripts/start.sh "$project"
+          uv run agentbus health
+          scripts/stop.sh "$project"
+          if uv run agentbus health; then echo "the bus is still running after stop.sh"; exit 1; fi
+
+      - name: start.ps1 / stop.ps1
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $project = Join-Path $env:RUNNER_TEMP 'demo project'
+          New-Item -ItemType Directory -Force $project | Out-Null
+          ./scripts/start.ps1 -ProjectDir $project -Port 8799 -NoMonitor
+          if ($LASTEXITCODE) { exit 1 }
+          uv run agentbus --port 8799 health
+          if ($LASTEXITCODE) { exit 1 }
+          ./scripts/stop.ps1 -ProjectDir $project
+          uv run agentbus --port 8799 health
+          if (-not $LASTEXITCODE) { Write-Output 'the bus is still running after stop.ps1'; exit 1 }
+          exit 0

@@ -1,0 +1,68 @@
+[project]
+name = "agentbus"
+dynamic = ["version"]
+description = "Team coordination bus for parallel Claude Code sessions: roster, messages, tasks and path claims over MCP"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Retention Software" }]
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=2.3,<3",
+]
+keywords = ["mcp", "claude-code", "agents", "multi-agent", "coordination"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Software Development",
+]
+
+[project.urls]
+Homepage = "https://github.com/RetentionSoftware/agentbus"
+Issues = "https://github.com/RetentionSoftware/agentbus/issues"
+Changelog = "https://github.com/RetentionSoftware/agentbus/blob/main/CHANGELOG.md"
+
+[project.scripts]
+agentbus = "agentbus.cli:main"
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/agentbus/__init__.py"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.18",
+    "pytest>=8.4",
+    "ruff>=0.14",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-markers"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "PL", "PT"]
+ignore = [
+    "PLR0911", # too many return statements: dispatchers and validators read better flat
+    "PLR0912", # too many branches: same
+    "PLR0913", # too many arguments: tool signatures mirror the MCP API
+    "PLR0917", # too many positional arguments: same
+    "PLR2004", # magic values: protocol constants in tests are clearer inline
+    "RUF001",  # ambiguous unicode characters: '…' and '→' are intended in user-facing text
+]
+
+[tool.mypy]
+strict = true
+python_version = "3.11"
+files = ["src", "tests"]
