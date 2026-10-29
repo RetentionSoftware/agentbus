@@ -225,6 +225,11 @@ The workflow that agentbus was built around: one **director** session works with
    asking questions over the bus; it hands in with `task_update(state="review")`, which notifies the director.
 5. **The director merges** and moves the task to `done`; tasks that depend on it can start.
 
+The whole routine of the director — specifications and their independent read, launching agents and choosing models,
+reviews in a clean worktree, pauses, the failure modes that turn a team into a mess — is written down in the
+[director playbook](docs/director/README.md), with templates for the [task spec](templates/TASK.md), the
+[director's journal](templates/DIRECTOR-JOURNAL.md) and the [review checklist](templates/REVIEW-CHECKLIST.md).
+
 **How the director gets mail.** Messages reach a session through the hook after its tool calls. A director that is
 waiting for agents runs `agentbus waitmail agent=director timeout=1800` as a background command: it exits as soon as
 there is unread mail (without marking it read), which ends the wait.

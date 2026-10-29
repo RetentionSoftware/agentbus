@@ -6,6 +6,14 @@ The MCP tool set (names, parameters, results) and the hook's REST endpoint are t
 
 ## [Unreleased]
 
+### Added
+
+- The director playbook (`docs/director/README.md`, Russian: `README.ru.md`): how a director session runs a team on
+  the bus — specs and their independent read, launch and model choice, waking idle agents, review in a clean worktree
+  with mutation tests, merge and clean-up, pause and resume, failure modes.
+- Templates: task specification (`templates/TASK.md`), director's journal (`templates/DIRECTOR-JOURNAL.md`), review
+  checklist (`templates/REVIEW-CHECKLIST.md`).
+
 ### Planned
 
 - `agentbus init`: generate `.mcp.json`, the hook settings, the hook file and the protocol templates in a project.

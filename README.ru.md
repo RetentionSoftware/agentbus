@@ -225,6 +225,11 @@ bus, status). `[agent-bus] …` blocks in your context are messages of the team'
    задаёт вопросы через шину; сдаёт работу через `task_update(state="review")`, что уведомляет director.
 5. **Director сливает** ветку и переводит задачу в `done`; зависящие от неё задачи могут стартовать.
 
+Весь порядок работы director — спецификации и их независимая вычитка, запуск агентов и выбор модели, ревью в
+чистом worktree, паузы, причины, по которым команда превращается в кашу, — записан в
+[шпаргалке director](docs/director/README.ru.md), с шаблонами [спецификации задачи](templates/TASK.md),
+[журнала director](templates/DIRECTOR-JOURNAL.md) и [чеклиста ревью](templates/REVIEW-CHECKLIST.md).
+
 **Как director получает почту.** Сообщения доходят до сессии через хук после её вызовов инструментов. Director,
 который ждёт агентов, запускает фоном `agentbus waitmail agent=director timeout=1800`: команда завершается, как только
 есть непрочитанная почта (не помечая её прочитанной), и это прерывает ожидание.
